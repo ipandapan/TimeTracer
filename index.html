@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'">
+    <title>TimeTracer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f0f2f5;
+            color: #1d1d1f;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Texture Background ── */
+        .bg-texture {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(99,102,241,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(56,189,248,0.04) 0%, transparent 50%);
+        }
+
+        /* ── Layout ── */
+        .shell { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 40px 24px 56px; }
+
+        /* ── Top Bar ── */
+        .topbar {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: 32px;
+        }
+        .brand { font-size: 11px; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; color: #6366f1; }
+        .brand-sub { font-size: 10px; letter-spacing: 2px; color: #94a3b8; margin-top: 2px; }
+        .topbar-right { text-align: right; }
+        .topbar-clock {
+            font-size: 32px; font-weight: 200; color: #1e293b;
+            letter-spacing: 1px; font-variant-numeric: tabular-nums; line-height: 1;
+        }
+        .topbar-date { font-size: 11px; color: #94a3b8; margin-top: 4px; letter-spacing: 0.5px; }
+
+        /* ── Grid ── */
+        .grid {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            grid-template-rows: auto auto auto;
+            gap: 14px;
+        }
+
+        /* ── Card ── */
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow:
+                0 1px 3px rgba(0,0,0,0.04),
+                0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: box-shadow 0.3s;
+        }
+        .card:hover {
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.06),
+                0 8px 24px rgba(0,0,0,0.04);
+        }
+        .card-tag {
+            font-size: 9px; font-weight: 700; letter-spacing: 2.5px;
+            text-transform: uppercase; color: #a5b4fc; margin-bottom: 16px;
+        }
+
+        /* ── Gauge ── */
+        .gauge-card {
+            grid-row: 1 / 4;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .gauge-ring { position: relative; width: 200px; height: 200px; margin-bottom: 20px; }
+        .gauge-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .g-bg { fill: none; stroke: #e2e8f0; stroke-width: 5; }
+        .g-fill {
+            fill: none; stroke: url(#gGrad); stroke-width: 5; stroke-linecap: round;
+            stroke-dasharray: 502.65; stroke-dashoffset: 502.65;
+            transition: stroke-dashoffset 2s cubic-bezier(.4,0,.2,1);
+            filter: drop-shadow(0 0 6px rgba(99,102,241,0.2));
+        }
+        .gauge-inner {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .gauge-pct { font-size: 40px; font-weight: 200; color: #1e293b; line-height: 1; }
+        .gauge-pct small { font-size: 14px; color: #94a3b8; margin-left: 2px; font-weight: 400; }
+        .gauge-sub { font-size: 9px; letter-spacing: 3px; color: #94a3b8; margin-top: 5px; text-transform: uppercase; }
+        .ring-deco {
+            width: 150px; height: 150px; border-radius: 50%;
+            border: 1px solid #f1f5f9;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+        }
+
+        /* ── Stats ── */
+        .stats-row { display: flex; gap: 14px; }
+        .stat-card { flex: 1; text-align: center; padding: 18px 12px; }
+        .stat-num {
+            font-size: clamp(30px,4.5vw,44px); font-weight: 200; line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+        .stat-num.indigo { color: #6366f1; }
+        .stat-num.slate  { color: #475569; }
+        .stat-num.light  { color: #94a3b8; }
+        .stat-lbl { font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: #94a3b8; margin-top: 8px; }
+
+        /* ── Details ── */
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .d-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 14px; border-radius: 10px;
+            background: #f8fafc; border: 1px solid #f1f5f9;
+            transition: background 0.2s;
+        }
+        .d-item:hover { background: #f1f5f9; }
+        .d-key { font-size: 11px; color: #64748b; }
+        .d-val { font-size: 13px; font-weight: 500; color: #1e293b; font-variant-numeric: tabular-nums; }
+
+        /* ── Ticker ── */
+
+        /* ── Progress ── */
+        .prog-bar {
+            height: 4px; background: #e2e8f0; border-radius: 2px;
+            position: relative; overflow: visible;
+        }
+        .prog-fill {
+            height: 100%; width: 0; border-radius: 2px;
+            background: linear-gradient(90deg, #6366f1, #818cf8);
+            transition: width 2s cubic-bezier(.4,0,.2,1);
+            position: relative;
+        }
+        .prog-dot {
+            position: absolute; right: -5px; top: -4px;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: #fff; border: 3px solid #6366f1;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+            opacity: 0; transition: opacity 1s 2s;
+        }
+        .prog-labels {
+            display: flex; justify-content: space-between;
+            margin-top: 8px; font-size: 10px; color: #94a3b8; letter-spacing: 0.5px;
+        }
+
+        /* ── Animations ── */
+        .fade-in { opacity: 0; transform: translateY(12px); animation: fi .5s ease-out forwards; }
+        @keyframes fi { to { opacity: 1; transform: translateY(0); } }
+        .d1 { animation-delay: .05s } .d2 { animation-delay: .1s } .d3 { animation-delay: .15s }
+        .d4 { animation-delay: .2s } .d5 { animation-delay: .25s } .d6 { animation-delay: .3s }
+
+        /* ── Responsive ── */
+        @media (max-width: 680px) {
+            .grid { grid-template-columns: 1fr; }
+            .gauge-card { grid-row: auto; }
+            .stats-row { flex-direction: column; gap: 10px; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .topbar { flex-direction: column; gap: 12px; align-items: flex-start; }
+            .topbar-right { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-texture"></div>
+
+<div class="shell">
+    <div class="topbar">
+        <div>
+            <div class="brand">TimeTracer</div>
+            <div class="brand-sub">Life Dashboard</div>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-clock" id="clock">--:--:--</div>
+            <div class="topbar-date" id="date">----/--/-- ---</div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <!-- Gauge -->
+        <div class="card gauge-card fade-in d1">
+            <div class="card-tag">Progress</div>
+            <div class="gauge-ring">
+                <svg viewBox="0 0 180 180">
+                    <defs>
+                        <linearGradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#6366f1"/>
+                            <stop offset="100%" stop-color="#818cf8"/>
+                        </linearGradient>
+                    </defs>
+                    <circle class="g-bg" cx="90" cy="90" r="80"/>
+                    <circle class="g-fill" id="g-fill" cx="90" cy="90" r="80"/>
+                </svg>
+                <div class="ring-deco"></div>
+                <div class="gauge-inner">
+                    <div class="gauge-pct" id="g-pct">--<small>%</small></div>
+                    <div class="gauge-sub">lifetime</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="card stats-row fade-in d2">
+            <div class="stat-card">
+                <div class="stat-num indigo" id="v-lived">--</div>
+                <div class="stat-lbl">Days Lived</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num slate" id="v-left">--</div>
+                <div class="stat-lbl">Days Left</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num light" id="v-total">--</div>
+                <div class="stat-lbl">Total</div>
+            </div>
+        </div>
+
+        <!-- Details -->
+        <div class="card fade-in d3">
+            <div class="card-tag">Details</div>
+            <div class="detail-grid">
+                <div class="d-item"><span class="d-key">Minutes Lived</span><span class="d-val" id="d-mins">--</span></div>
+                <div class="d-item"><span class="d-key">Minutes Left</span><span class="d-val" id="d-mins-left">--</span></div>
+                <div class="d-item"><span class="d-key">Hours Lived</span><span class="d-val" id="d-hours">--</span></div>
+                <div class="d-item"><span class="d-key">Hours Left</span><span class="d-val" id="d-hours-left">--</span></div>
+                <div class="d-item"><span class="d-key">Days Lived</span><span class="d-val" id="d-days">--</span></div>
+                <div class="d-item"><span class="d-key">Days Left</span><span class="d-val" id="d-days-left">--</span></div>
+                <div class="d-item"><span class="d-key">Months Lived</span><span class="d-val" id="d-months">--</span></div>
+                <div class="d-item"><span class="d-key">Months Left</span><span class="d-val" id="d-months-left">--</span></div>
+                <div class="d-item"><span class="d-key">Years Lived</span><span class="d-val" id="d-years">--</span></div>
+                <div class="d-item"><span class="d-key">Years Left</span><span class="d-val" id="d-years-left">--</span></div>
+            </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="fade-in d5">
+            <div class="prog-bar">
+                <div class="prog-fill" id="prog-fill"><div class="prog-dot" id="prog-dot"></div></div>
+            </div>
+            <div class="prog-labels">
+                <span id="prog-start">--</span>
+                <span id="prog-end">--</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const B = new Date(1991, 3, 16);
+    const Y = 90;
+    const TD = Math.round(Y * 365.25);
+    const DE = new Date(B.getTime() + TD * 86400000);
+    const C = 2 * Math.PI * 80;
+    const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+    const $ = id => document.getElementById(id);
+    function fmt(n) { return n.toLocaleString('en-US'); }
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function tick() {
+        const now = Date.now();
+        const lived = now - B.getTime();
+        const left = Math.max(0, DE.getTime() - now);
+        const d = Math.floor(lived / 86400000);
+        const dr = Math.max(0, Math.ceil(left / 86400000));
+        const pct = Math.min(100, lived / (TD * 86400000) * 100);
+        const hrs = Math.floor(lived / 3600000);
+        const mins = Math.floor(lived / 60000);
+        const months = Math.floor(d / 30.44);
+        const years = (lived / (365.25 * 86400000));
+        const hrsL = Math.floor(left / 3600000);
+        const minsL = Math.floor(left / 60000);
+        const monthsL = Math.ceil(dr / 30.44);
+        const yearsL = (left / (365.25 * 86400000));
+
+        $('g-fill').style.strokeDashoffset = C * (1 - pct / 100);
+        $('g-pct').innerHTML = pct.toFixed(2) + '<small>%</small>';
+        $('v-lived').textContent = fmt(d);
+        $('v-left').textContent = fmt(dr);
+        $('v-total').textContent = fmt(TD);
+        $('d-hours').textContent = fmt(hrs);
+        $('d-hours-left').textContent = fmt(hrsL);
+        $('d-mins').textContent = fmt(mins);
+        $('d-mins-left').textContent = fmt(minsL);
+        $('d-hours').textContent = fmt(hrs);
+        $('d-hours-left').textContent = fmt(hrsL);
+        $('d-days').textContent = fmt(d);
+        $('d-days-left').textContent = fmt(dr);
+        $('d-months').textContent = fmt(months);
+        $('d-months-left').textContent = fmt(monthsL);
+        $('d-years').textContent = years.toFixed(2);
+        $('d-years-left').textContent = yearsL.toFixed(2);
+
+
+
+        const n = new Date();
+        $('clock').textContent = pad(n.getHours()) + ':' + pad(n.getMinutes()) + ':' + pad(n.getSeconds());
+        $('date').textContent = n.getFullYear() + '/' + pad(n.getMonth()+1) + '/' + pad(n.getDate()) + '  ' + DAYS[n.getDay()];
+
+        $('prog-fill').style.width = pct + '%';
+        $('prog-dot').style.opacity = '1';
+        $('prog-start').textContent = '1991';
+        $('prog-end').textContent = '2081';
+    }
+
+    tick();
+    setInterval(tick, 1000);
+</script>
+
+</body>
+</html>
