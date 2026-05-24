@@ -301,7 +301,6 @@
             <span id="year-start">-----</span>
             <span id="year-end">-----</span>
         </div>
-        <div class="year-quote">"A journey of a thousand miles begins with a single step."</div>
     </div>
 
     <!-- Typewriter -->
@@ -327,7 +326,7 @@
                     <div class="gauge-pct" id="g-life-pct">--<small>%</small></div>
                     <div class="gauge-meta">
                         <div class="gauge-meta-row"><span class="gk">Lived</span><span class="gv" id="g-lived">--</span></div>
-                        <div class="gauge-meta-row"><span class="gk">Left</span><span class="gv" id="g-left">--</span></div>
+                        <div class="gauge-meta-row"><span class="gk">Ahead</span><span class="gv" id="g-left">--</span></div>
                         <div class="gauge-meta-row"><span class="gk">Total</span><span class="gv" id="g-total">--</span></div>
                     </div>
                 </div>
@@ -350,7 +349,7 @@
                     <div class="gauge-pct" id="g-career-pct">--<small>%</small></div>
                     <div class="gauge-meta">
                         <div class="gauge-meta-row"><span class="gk">Worked</span><span class="gv" id="g-worked">--</span></div>
-                        <div class="gauge-meta-row"><span class="gk">To Go</span><span class="gv" id="g-toretire">--</span></div>
+                        <div class="gauge-meta-row"><span class="gk">Until Retire</span><span class="gv" id="g-toretire">--</span></div>
                         <div class="gauge-meta-row"><span class="gk">Total</span><span class="gv" id="g-career-total">--</span></div>
                     </div>
                 </div>
@@ -370,7 +369,7 @@
                 <div class="d-item"><span class="d-key">Years</span><span class="d-val" id="d-years">--</span></div>
             </div>
             <div class="d-col">
-                <div class="d-col-title remaining">Remaining</div>
+                <div class="d-col-title remaining">Ahead</div>
                 <div class="d-item"><span class="d-key">Hours</span><span class="d-val" id="d-hours-left">--</span></div>
                 <div class="d-item"><span class="d-key">Days</span><span class="d-val" id="d-days-left">--</span></div>
                 <div class="d-item"><span class="d-key">Months</span><span class="d-val" id="d-months-left">--</span></div>
@@ -380,8 +379,8 @@
                 <div class="d-col-title career">Career</div>
                 <div class="d-item"><span class="d-key">Months</span><span class="d-val" id="d-worked-m">--</span></div>
                 <div class="d-item"><span class="d-key">Years</span><span class="d-val" id="d-worked-y">--</span></div>
-                <div class="d-item"><span class="d-key">Mo. to Go</span><span class="d-val" id="d-retire-m">--</span></div>
-                <div class="d-item"><span class="d-key">Yr. to Go</span><span class="d-val" id="d-retire-y">--</span></div>
+                <div class="d-item"><span class="d-key">Months Left</span><span class="d-val" id="d-retire-m">--</span></div>
+                <div class="d-item"><span class="d-key">Years Left</span><span class="d-val" id="d-retire-y">--</span></div>
             </div>
         </div>
     </div>
@@ -525,8 +524,8 @@
 
     const TW_LINES = [
         { getText: () => `${fmt(daysSince(BIRTH))} days in the world.`, cls: 'tw-num' },
-        { getText: () => `${fmt(daysSince(WORK_START))} of them working.`, cls: 'tw-num2' },
-        { getText: () => `${fmt(daysUntil(RETIRE))} until the calendar is mine.`, cls: 'tw-num3' },
+        { getText: () => `${fmt(daysSince(WORK_START))} days at work.`, cls: 'tw-num2' },
+        { getText: () => `${fmt(daysUntil(RETIRE))} days until the calendar is mine.`, cls: 'tw-num3' },
     ];
 
     function highlightNums(str, cls) {
