@@ -112,6 +112,13 @@
         .stat-num.light  { color: #94a3b8; }
         .stat-lbl { font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: #94a3b8; margin-top: 8px; }
 
+        /* ── Retirement ── */
+        .retire-grid { display: flex; align-items: center; gap: 24px; }
+        .retire-main { flex: 1; }
+        .retire-days { font-size: 36px; font-weight: 200; color: #1d1d1f; font-variant-numeric: tabular-nums; line-height: 1; }
+        .retire-label { font-size: 11px; color: #86868b; margin-top: 4px; letter-spacing: 1px; }
+        .retire-details { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        @media (max-width: 540px) { .retire-grid { flex-direction: column; align-items: flex-start; gap: 16px; } }
         /* ── Details ── */
         .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .d-item {
@@ -238,6 +245,21 @@
             </div>
         </div>
 
+        <!-- Retirement -->
+        <div class="card fade-in d4">
+            <div class="card-tag">Retirement</div>
+            <div class="retire-grid">
+                <div class="retire-main">
+                    <div class="retire-days" id="retire-days">--</div>
+                    <div class="retire-label">days until retirement</div>
+                </div>
+                <div class="retire-details">
+                    <div class="d-item"><span class="d-key">Target</span><span class="d-val">2054.04</span></div>
+                    <div class="d-item"><span class="d-key">Days</span><span class="d-val" id="retire-total">--</span></div>
+                    <div class="d-item"><span class="d-key">Progress</span><span class="d-val" id="retire-pct">--</span></div>
+                </div>
+            </div>
+        </div>
         <!-- Progress -->
         <div class="fade-in d5">
             <div class="prog-bar">
@@ -258,6 +280,8 @@
     const DE = new Date(B.getTime() + TD * 86400000);
     const C = 2 * Math.PI * 80;
     const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const RD = new Date(2054, 3, 1);
+        const RTD = Math.round((RD - B) / 86400000);
 
     const $ = id => document.getElementById(id);
     function fmt(n) { return n.toLocaleString('en-US'); }
@@ -303,6 +327,12 @@
         $('clock').textContent = pad(n.getHours()) + ':' + pad(n.getMinutes()) + ':' + pad(n.getSeconds());
         $('date').textContent = n.getFullYear() + '/' + pad(n.getMonth()+1) + '/' + pad(n.getDate()) + '  ' + DAYS[n.getDay()];
 
+        const retireLeft = Math.max(0, RD.getTime() - now);
+        const retireDays = Math.ceil(retireLeft / 86400000);
+        const retirePct = Math.min(100, Math.max(0, lived / (RD.getTime() - B.getTime()) * 100));
+        $('retire-days').textContent = fmt(retireDays);
+        $('retire-total').textContent = fmt(RTD);
+        $('retire-pct').textContent = retirePct.toFixed(2) + '%';
         $('prog-fill').style.width = pct + '%';
         $('prog-dot').style.opacity = '1';
         $('prog-start').textContent = '1991';
