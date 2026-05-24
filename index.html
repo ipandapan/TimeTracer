@@ -231,9 +231,7 @@
 
     <!-- Typewriter -->
     <div class="tw-section">
-        <div class="tw-line" id="tw1"></div>
-        <div class="tw-line" id="tw2"></div>
-        <div class="tw-line" id="tw3"></div>
+        <div class="tw-line" id="tw-main"></div>
     </div>
 
     <!-- Gauges -->
@@ -392,39 +390,62 @@
         type();
     }
 
-    function runTypewriter() {
-        const now = Date.now();
-        const livedDays = Math.floor((now - BIRTH.getTime()) / 86400000);
-        const workedDays = Math.floor(Math.max(0, now - WORK_START.getTime()) / 86400000);
-        const retireDays = Math.ceil(Math.max(0, RETIRE.getTime() - now) / 86400000);
+    const TW_LINES = [
+        { prefix: 'You have lived for ', cls: 'tw-num', getVal: () => fmt(Math.floor((Date.now() - BIRTH.getTime()) / 86400000)), suffix: ' days.' },
+        { prefix: 'You have worked for ', cls: 'tw-num2', getVal: () => fmt(Math.floor(Math.max(0, Date.now() - WORK_START.getTime()) / 86400000)), suffix: ' days.' },
+        { prefix: 'Retirement in ', cls: 'tw-num3', getVal: () => fmt(Math.ceil(Math.max(0, RETIRE.getTime() - Date.now()) / 86400000)), suffix: ' days.' },
+    ];
 
-        const el1 = $('tw1');
-        const el2 = $('tw2');
-        const el3 = $('tw3');
-
-        typewrite(el1, [
-            { type: 'text', value: '> ' },
-            { type: 'text', value: 'You have lived for ' },
-            { type: 'num', value: fmt(livedDays), cls: 'tw-num' },
-            { type: 'text', value: ' days.' },
-        ], () => {
-            typewrite(el2, [
-                { type: 'text', value: '> ' },
-                { type: 'text', value: 'You have worked for ' },
-                { type: 'num', value: fmt(workedDays), cls: 'tw-num2' },
-                { type: 'text', value: ' days.' },
-            ], () => {
-                typewrite(el3, [
-                    { type: 'text', value: '> ' },
-                    { type: 'text', value: 'Retirement in ' },
-                    { type: 'num', value: fmt(retireDays), cls: 'tw-num3' },
-                    { type: 'text', value: ' days.' },
-                ]);
-            });
-        });
+    function typeErase(el, parts, cb) {
+        let i = 0, text = '';
+        function type() {
+            if (i >= parts.length) { setTimeout(erase, 1800); return; }
+            const p = parts[i];
+            if (p.type === 'text') {
+                let j = 0;
+                function typeChar() {
+                    if (j >= p.value.length) { i++; type(); return; }
+                    text += p.value[j];
+                    el.innerHTML = text + '<span class="tw-cursor"></span>';
+                    j++;
+                    setTimeout(typeChar, 28 + Math.random() * 35);
+                }
+                typeChar();
+            } else if (p.type === 'num') {
+                const span = '<span class="' + p.cls + '">' + p.value + '</span>';
+                text += span;
+                el.innerHTML = text + '<span class="tw-cursor"></span>';
+                i++;
+                setTimeout(type, 60);
+            }
+        }
+        function erase() {
+            if (text.length === 0) { if (cb) cb(); return; }
+            // strip last HTML tag or char
+            const tagMatch = text.match(/<[^>]+>$/);
+            if (tagMatch) {
+                text = text.slice(0, -tagMatch[0].length);
+            } else {
+                text = text.slice(0, -1);
+            }
+            el.innerHTML = text + '<span class="tw-cursor"></span>';
+            setTimeout(erase, 12);
+        }
+        type();
     }
 
-    setTimeout(runTypewriter, 800);
+    function runCycle(idx) {
+        const el = $('tw-main');
+        const line = TW_LINES[idx % TW_LINES.length];
+        typeErase(el, [
+            { type: 'text', value: '> ' },
+            { type: 'text', value: line.prefix },
+            { type: 'num', value: line.getVal(), cls: line.cls },
+            { type: 'text', value: line.suffix },
+        ], () => runCycle(idx + 1));
+    }
+
+    setTimeout(() => runCycle(0), 800);
 </script>
 
 </body>
