@@ -103,14 +103,24 @@
         .year-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .year-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
         .year-pct { font-family: var(--mono); font-size: 12px; font-weight: 400; color: #8b5cf6; }
-        .year-track { position: relative; height: 8px; border-radius: 4px; background: #f0f0f2; overflow: hidden; }
+        .year-track { position: relative; height: 28px; border-radius: 6px; background: #f0f0f2; overflow: visible; margin: 8px 0 4px; }
         .year-fill {
-            position: absolute; top: 0; left: 0; bottom: 0; border-radius: 4px;
+            position: absolute; top: 0; left: 0; bottom: 0; border-radius: 6px;
             background: linear-gradient(90deg, #8b5cf6, #a78bfa, #c4b5fd);
             transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
         }
+        .year-ruler { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; }
+        .year-tick {
+            position: absolute; top: 0; bottom: 0; width: 1px;
+            background: rgba(0,0,0,0.08);
+        }
+        .year-tick-label {
+            position: absolute; bottom: -16px;
+            font-family: var(--mono); font-size: 8px; color: #aeaeb2;
+            transform: translateX(-50%); letter-spacing: 0.5px;
+        }
         .year-ends {
-            display: flex; justify-content: space-between; margin-top: 6px;
+            display: flex; justify-content: space-between; margin-top: 14px;
             font-family: var(--mono); font-size: 10px; color: var(--muted);
         }
         .year-quote {
@@ -244,6 +254,7 @@
         </div>
         <div class="year-track">
             <div class="year-fill" id="year-fill"></div>
+            <div class="year-ruler" id="year-ruler"></div>
         </div>
         <div class="year-ends">
             <span id="year-start">-----</span>
@@ -366,6 +377,31 @@
         $('year-pct').textContent = yearPct.toFixed(2) + '%';
         $('year-start').textContent = dNow.getFullYear();
         $('year-end').textContent = dNow.getFullYear() + 1;
+
+        // Ruler ticks (once per year change)
+        if (!window._lastYear || window._lastYear !== dNow.getFullYear()) {
+            window._lastYear = dNow.getFullYear();
+            const ruler = $('year-ruler');
+            ruler.innerHTML = '';
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const isLeap = new Date(dNow.getFullYear(), 1, 29).getMonth() === 1;
+            const yearDays = isLeap ? 366 : 365;
+            for (let m = 0; m < 12; m++) {
+                const dayOfYear = Math.round((new Date(dNow.getFullYear(), m, 1) - yearStart) / 86400000);
+                const pct = (dayOfYear / yearDays) * 100;
+                const tick = document.createElement('div');
+                tick.className = 'year-tick';
+                tick.style.left = pct + '%';
+                ruler.appendChild(tick);
+                if (m > 0) {
+                    const label = document.createElement('div');
+                    label.className = 'year-tick-label';
+                    label.style.left = pct + '%';
+                    label.textContent = months[m];
+                    ruler.appendChild(label);
+                }
+            }
+        }
 
         // Life gauge
         $('g-life').style.strokeDashoffset = CIRC * (1 - lifePct / 100);
