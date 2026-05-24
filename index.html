@@ -432,10 +432,30 @@
     setInterval(tick, 1000);
 
     // ── Typewriter ──
+    // Beijing time (UTC+8)
+    function beijingNow() {
+        const now = new Date();
+        const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+        return new Date(utc + 8 * 3600000);
+    }
+
+    function daysSince(date) {
+        const bj = beijingNow();
+        const bjToday = new Date(bj.getFullYear(), bj.getMonth(), bj.getDate());
+        return Math.floor((bjToday - date) / 86400000);
+    }
+
+    function daysUntil(date) {
+        const bj = beijingNow();
+        const bjToday = new Date(bj.getFullYear(), bj.getMonth(), bj.getDate());
+        const diff = Math.ceil((date - bjToday) / 86400000);
+        return diff > 0 ? diff : 0;
+    }
+
     const TW_LINES = [
-        { getText: () => `You've been alive for ${fmt(Math.floor((Date.now() - BIRTH.getTime()) / 86400000))} wonderful days.`, cls: 'tw-num' },
-        { getText: () => `You've been building for ${fmt(Math.floor(Math.max(0, Date.now() - WORK_START.getTime()) / 86400000))} days now.`, cls: 'tw-num2' },
-        { getText: () => `${fmt(Math.ceil(Math.max(0, RETIRE.getTime() - Date.now()) / 86400000))} more days of adventure ahead.`, cls: 'tw-num3' },
+        { getText: () => `${fmt(daysSince(BIRTH))} days in the world.`, cls: 'tw-num' },
+        { getText: () => `${fmt(daysSince(WORK_START))} of them working.`, cls: 'tw-num2' },
+        { getText: () => `${fmt(daysUntil(RETIRE))} until the calendar is mine.`, cls: 'tw-num3' },
     ];
 
     function highlightNums(str, cls) {
