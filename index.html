@@ -201,7 +201,13 @@
         .gauge-meta-row .gv { font-family: var(--mono); font-weight: 400; color: var(--ink); }
 
         /* ── Details ── */
-        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .d-col-title {
+            font-size: 9px; font-weight: 600; letter-spacing: 2px;
+            text-transform: uppercase; color: #8b5cf6; padding: 0 14px 6px;
+        }
+        .d-col-title.career { color: #ff6b35; }
+        .d-col-title.remaining { color: #0071e3; }
         .d-item {
             display: flex; justify-content: space-between; align-items: center;
             padding: 12px 14px; border-radius: 12px;
@@ -321,14 +327,27 @@
     <div class="card d5">
         <div class="card-tag">Details</div>
         <div class="detail-grid">
-            <div class="d-item"><span class="d-key">Minutes Lived</span><span class="d-val" id="d-mins">--</span></div>
-            <div class="d-item"><span class="d-key">Hours Lived</span><span class="d-val" id="d-hours">--</span></div>
-            <div class="d-item"><span class="d-key">Days Lived</span><span class="d-val" id="d-days">--</span></div>
-            <div class="d-item"><span class="d-key">Months Lived</span><span class="d-val" id="d-months">--</span></div>
-            <div class="d-item"><span class="d-key">Years Lived</span><span class="d-val" id="d-years">--</span></div>
-            <div class="d-item"><span class="d-key">Days Worked</span><span class="d-val" id="d-worked">--</span></div>
-            <div class="d-item"><span class="d-key">Days to Retire</span><span class="d-val" id="d-toretire">--</span></div>
-            <div class="d-item"><span class="d-key">Career Total</span><span class="d-val" id="d-career-total">--</span></div>
+            <div class="d-col">
+                <div class="d-col-title">Lived</div>
+                <div class="d-item"><span class="d-key">Hours</span><span class="d-val" id="d-hours">--</span></div>
+                <div class="d-item"><span class="d-key">Days</span><span class="d-val" id="d-days">--</span></div>
+                <div class="d-item"><span class="d-key">Months</span><span class="d-val" id="d-months">--</span></div>
+                <div class="d-item"><span class="d-key">Years</span><span class="d-val" id="d-years">--</span></div>
+            </div>
+            <div class="d-col">
+                <div class="d-col-title remaining">Remaining</div>
+                <div class="d-item"><span class="d-key">Hours</span><span class="d-val" id="d-hours-left">--</span></div>
+                <div class="d-item"><span class="d-key">Days</span><span class="d-val" id="d-days-left">--</span></div>
+                <div class="d-item"><span class="d-key">Months</span><span class="d-val" id="d-months-left">--</span></div>
+                <div class="d-item"><span class="d-key">Years</span><span class="d-val" id="d-years-left">--</span></div>
+            </div>
+            <div class="d-col">
+                <div class="d-col-title career">Career</div>
+                <div class="d-item"><span class="d-key">Months</span><span class="d-val" id="d-worked-m">--</span></div>
+                <div class="d-item"><span class="d-key">Years</span><span class="d-val" id="d-worked-y">--</span></div>
+                <div class="d-item"><span class="d-key">Mo. to Go</span><span class="d-val" id="d-retire-m">--</span></div>
+                <div class="d-item"><span class="d-key">Yr. to Go</span><span class="d-val" id="d-retire-y">--</span></div>
+            </div>
         </div>
     </div>
 
@@ -418,14 +437,22 @@
         $('g-career-total').textContent = fmt(CAREER_DAYS);
 
         // Details
-        $('d-mins').textContent = fmt(Math.floor(lived / 60000));
         $('d-hours').textContent = fmt(Math.floor(lived / 3600000));
         $('d-days').textContent = fmt(livedDays);
         $('d-months').textContent = fmt(Math.floor(livedDays / 30.44));
         $('d-years').textContent = (livedDays / 365.25).toFixed(2);
-        $('d-worked').textContent = fmt(workedDays);
-        $('d-toretire').textContent = fmt(retireDays);
-        $('d-career-total').textContent = fmt(CAREER_DAYS);
+        $('d-hours-left').textContent = fmt(Math.floor(left / 3600000));
+        $('d-days-left').textContent = fmt(leftDays);
+        $('d-months-left').textContent = fmt(Math.ceil(leftDays / 30.44));
+        $('d-years-left').textContent = (leftDays / 365.25).toFixed(2);
+        const workedMonths = Math.floor(workedDays / 30.44);
+        const workedYears = workedDays / 365.25;
+        const retireMonths = Math.ceil(retireDays / 30.44);
+        const retireYears = retireDays / 365.25;
+        $('d-worked-m').textContent = fmt(workedMonths);
+        $('d-worked-y').textContent = workedYears.toFixed(2);
+        $('d-retire-m').textContent = fmt(retireMonths);
+        $('d-retire-y').textContent = retireYears.toFixed(2);
     }
 
     tick();
