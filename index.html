@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,7 +18,6 @@
             --border: rgba(0,0,0,0.04);
             --accent: #0071e3;
             --accent2: #ff6b35;
-            --success: #30d158;
             --mono: 'JetBrains Mono', monospace;
         }
 
@@ -33,7 +32,7 @@
             overflow-x: hidden;
         }
 
-        /* ── Top Progress Bar ── */
+        /* ── Top Bar ── */
         .top-bar {
             position: fixed; top: 0; left: 0; right: 0;
             height: 4px; z-index: 100;
@@ -50,7 +49,7 @@
 
         .shell { max-width: 960px; margin: 0 auto; padding: 32px 24px 64px; }
 
-        /* ── Hero Progress ── */
+        /* ── Hero ── */
         .hero {
             background: var(--card);
             border-radius: 20px;
@@ -61,18 +60,10 @@
             opacity: 0; transform: translateY(12px);
             animation: fi .6s .1s ease-out forwards;
         }
-        .hero-row {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 14px;
-        }
+        .hero-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
         .hero-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
-        .hero-pct {
-            font-family: var(--mono); font-size: 13px; font-weight: 400; color: var(--accent);
-        }
-        .hero-bar {
-            position: relative; height: 28px; border-radius: 14px;
-            background: #f0f0f2; overflow: hidden;
-        }
+        .hero-pct { font-family: var(--mono); font-size: 13px; font-weight: 400; color: var(--accent); }
+        .hero-bar { position: relative; height: 28px; border-radius: 14px; background: #f0f0f2; overflow: hidden; }
         .hero-fill {
             position: absolute; top: 0; left: 0; bottom: 0; border-radius: 14px;
             background: linear-gradient(90deg, #0071e3, #5ac8fa, #34c759, #ff9500);
@@ -98,7 +89,37 @@
         }
         @keyframes glow { 0%,100% { opacity: 0.6 } 50% { opacity: 1 } }
 
-        /* ── Typewriter Section ── */
+        /* ── Year Progress ── */
+        .year-bar {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 20px 32px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.02);
+            border: 1px solid var(--border);
+            opacity: 0; transform: translateY(12px);
+            animation: fi .6s .15s ease-out forwards;
+        }
+        .year-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .year-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+        .year-pct { font-family: var(--mono); font-size: 12px; font-weight: 400; color: #8b5cf6; }
+        .year-track { position: relative; height: 8px; border-radius: 4px; background: #f0f0f2; overflow: hidden; }
+        .year-fill {
+            position: absolute; top: 0; left: 0; bottom: 0; border-radius: 4px;
+            background: linear-gradient(90deg, #8b5cf6, #a78bfa, #c4b5fd);
+            transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .year-ends {
+            display: flex; justify-content: space-between; margin-top: 6px;
+            font-family: var(--mono); font-size: 10px; color: var(--muted);
+        }
+        .year-quote {
+            text-align: center; margin-top: 12px;
+            font-size: 11px; color: #8b5cf6; font-style: italic; letter-spacing: 0.5px;
+            opacity: 0.7;
+        }
+
+        /* ── Typewriter ── */
         .tw-section {
             background: var(--card);
             border-radius: 20px;
@@ -117,12 +138,11 @@
             color: var(--ink);
             white-space: nowrap;
             overflow: hidden;
+            min-height: 2em;
         }
         .tw-cursor {
-            display: inline-block;
-            width: 2px; height: 1em;
-            background: var(--accent);
-            margin-left: 2px;
+            display: inline-block; width: 2px; height: 1em;
+            background: var(--accent); margin-left: 2px;
             vertical-align: text-bottom;
             animation: blink 1s step-end infinite;
         }
@@ -130,15 +150,12 @@
         .tw-num { color: var(--accent); font-weight: 500; }
         .tw-num2 { color: var(--accent2); font-weight: 500; }
         .tw-num3 { color: #34c759; font-weight: 500; }
-        .tw-muted { color: var(--muted); }
+        .tw-sym { color: #aeaeb2; }
+
+        @keyframes fi { to { opacity: 1; transform: translateY(0); } }
 
         /* ── Gauges ── */
-        .gauges {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
+        .gauges { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
         .card {
             background: var(--card);
             border-radius: 20px;
@@ -147,21 +164,16 @@
             border: 1px solid var(--border);
             opacity: 0; transform: translateY(12px);
             animation: fi .6s ease-out forwards;
-            position: relative; overflow: hidden;
         }
         .card.d3 { animation-delay: .3s }
         .card.d4 { animation-delay: .4s }
         .card.d5 { animation-delay: .5s }
-        .card.d6 { animation-delay: .6s }
-
-        @keyframes fi { to { opacity: 1; transform: translateY(0); } }
 
         .card-tag {
             font-size: 10px; font-weight: 600; letter-spacing: 3px;
             text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
         }
 
-        /* ── Gauge ── */
         .gauge-wrap { display: flex; align-items: center; gap: 24px; }
         .gauge-svg { flex-shrink: 0; }
         .gauge-info { flex: 1; }
@@ -190,18 +202,15 @@
         .d-key { font-size: 11px; color: #64748b; }
         .d-val { font-family: var(--mono); font-size: 13px; font-weight: 400; color: var(--ink); }
 
-        /* ── Footer ── */
         .footer {
             text-align: center; margin-top: 40px;
             font-size: 10px; color: #c7c7cc; letter-spacing: 2px; text-transform: uppercase;
         }
 
-        /* ── Responsive ── */
         @media (max-width: 640px) {
             .gauges { grid-template-columns: 1fr; }
             .gauge-pct { font-size: 26px; }
-            .hero { padding: 20px; }
-            .tw-section { padding: 18px 20px; }
+            .hero, .year-bar, .tw-section { padding: 20px; }
             .tw-line { font-size: 12px; }
             .detail-grid { grid-template-columns: 1fr; }
         }
@@ -212,21 +221,35 @@
 <div class="top-bar"><div class="top-bar-fill" id="top-bar-fill"></div></div>
 
 <div class="shell">
-    <!-- Hero Progress Bar -->
+    <!-- Life Progress -->
     <div class="hero">
         <div class="hero-row">
             <div class="hero-label">Life Progress</div>
             <div class="hero-pct" id="hero-pct">--%</div>
         </div>
         <div class="hero-bar">
-            <div class="hero-fill" id="hero-fill">
-                <div class="hero-glow"></div>
-            </div>
+            <div class="hero-fill" id="hero-fill"><div class="hero-glow"></div></div>
         </div>
         <div class="hero-ends">
-            <span id="hero-start">1991</span>
-            <span id="hero-end">2081</span>
+            <span>1991</span>
+            <span>2081</span>
         </div>
+    </div>
+
+    <!-- Year Progress -->
+    <div class="year-bar">
+        <div class="year-row">
+            <div class="year-label">This Year</div>
+            <div class="year-pct" id="year-pct">--%</div>
+        </div>
+        <div class="year-track">
+            <div class="year-fill" id="year-fill"></div>
+        </div>
+        <div class="year-ends">
+            <span id="year-start">-----</span>
+            <span id="year-end">-----</span>
+        </div>
+        <div class="year-quote">"A journey of a thousand miles begins with a single step."</div>
     </div>
 
     <!-- Typewriter -->
@@ -275,7 +298,7 @@
                     <div class="gauge-pct" id="g-career-pct">--<small>%</small></div>
                     <div class="gauge-meta">
                         <div class="gauge-meta-row"><span class="gk">Worked</span><span class="gv" id="g-worked">--</span></div>
-                        <div class="gauge-meta-row"><span class="gk">To Retire</span><span class="gv" id="g-toretire">--</span></div>
+                        <div class="gauge-meta-row"><span class="gk">To Go</span><span class="gv" id="g-toretire">--</span></div>
                         <div class="gauge-meta-row"><span class="gk">Total</span><span class="gv" id="g-career-total">--</span></div>
                     </div>
                 </div>
@@ -313,7 +336,6 @@
 
     const $ = id => document.getElementById(id);
     function fmt(n) { return n.toLocaleString('en-US'); }
-    function pad(n) { return String(n).padStart(2, '0'); }
 
     function tick() {
         const now = Date.now();
@@ -330,10 +352,20 @@
         const lifePct = Math.min(100, lived / (LIFE_END.getTime() - BIRTH.getTime()) * 100);
         const careerPct = Math.min(100, Math.max(0, worked / (RETIRE.getTime() - WORK_START.getTime()) * 100));
 
-        // Hero bar
+        // Hero
         $('hero-fill').style.width = lifePct + '%';
         $('hero-pct').textContent = lifePct.toFixed(2) + '%';
         $('top-bar-fill').style.width = lifePct + '%';
+
+        // Year progress
+        const dNow = new Date();
+        const yearStart = new Date(dNow.getFullYear(), 0, 1);
+        const yearEnd = new Date(dNow.getFullYear() + 1, 0, 1);
+        const yearPct = Math.min(100, (now - yearStart.getTime()) / (yearEnd.getTime() - yearStart.getTime()) * 100);
+        $('year-fill').style.width = yearPct.toFixed(2) + '%';
+        $('year-pct').textContent = yearPct.toFixed(2) + '%';
+        $('year-start').textContent = dNow.getFullYear();
+        $('year-end').textContent = dNow.getFullYear() + 1;
 
         // Life gauge
         $('g-life').style.strokeDashoffset = CIRC * (1 - lifePct / 100);
@@ -364,71 +396,29 @@
     setInterval(tick, 1000);
 
     // ── Typewriter ──
-    function typewrite(el, parts, cb) {
-        let i = 0, text = '';
-        function type() {
-            if (i >= parts.length) { if (cb) cb(); return; }
-            const p = parts[i];
-            if (p.type === 'text') {
-                let j = 0;
-                function typeChar() {
-                    if (j >= p.value.length) { i++; type(); return; }
-                    text += p.value[j];
-                    el.innerHTML = text + '<span class="tw-cursor"></span>';
-                    j++;
-                    setTimeout(typeChar, 30 + Math.random() * 40);
-                }
-                typeChar();
-            } else if (p.type === 'num') {
-                const span = '<span class="' + p.cls + '">' + p.value + '</span>';
-                text += span;
-                el.innerHTML = text + '<span class="tw-cursor"></span>';
-                i++;
-                setTimeout(type, 60);
-            }
-        }
-        type();
-    }
-
     const TW_LINES = [
-        { prefix: 'You have lived for ', cls: 'tw-num', getVal: () => fmt(Math.floor((Date.now() - BIRTH.getTime()) / 86400000)), suffix: ' days.' },
-        { prefix: 'You have worked for ', cls: 'tw-num2', getVal: () => fmt(Math.floor(Math.max(0, Date.now() - WORK_START.getTime()) / 86400000)), suffix: ' days.' },
-        { prefix: 'Retirement in ', cls: 'tw-num3', getVal: () => fmt(Math.ceil(Math.max(0, RETIRE.getTime() - Date.now()) / 86400000)), suffix: ' days.' },
+        { getText: () => `You've been alive for ${fmt(Math.floor((Date.now() - BIRTH.getTime()) / 86400000))} wonderful days.`, cls: 'tw-num' },
+        { getText: () => `You've been building for ${fmt(Math.floor(Math.max(0, Date.now() - WORK_START.getTime()) / 86400000))} days now.`, cls: 'tw-num2' },
+        { getText: () => `${fmt(Math.ceil(Math.max(0, RETIRE.getTime() - Date.now()) / 86400000))} more days of adventure ahead.`, cls: 'tw-num3' },
     ];
 
-    function typeErase(el, parts, cb) {
-        let i = 0, text = '';
+    function highlightNums(str, cls) {
+        return str.replace(/([\d,]+)/g, `<span class="${cls}">$1</span>`);
+    }
+
+    function typeErase(el, text, cls, cb) {
+        let i = 0, displayed = '';
         function type() {
-            if (i >= parts.length) { setTimeout(erase, 1800); return; }
-            const p = parts[i];
-            if (p.type === 'text') {
-                let j = 0;
-                function typeChar() {
-                    if (j >= p.value.length) { i++; type(); return; }
-                    text += p.value[j];
-                    el.innerHTML = text + '<span class="tw-cursor"></span>';
-                    j++;
-                    setTimeout(typeChar, 28 + Math.random() * 35);
-                }
-                typeChar();
-            } else if (p.type === 'num') {
-                const span = '<span class="' + p.cls + '">' + p.value + '</span>';
-                text += span;
-                el.innerHTML = text + '<span class="tw-cursor"></span>';
-                i++;
-                setTimeout(type, 60);
-            }
+            if (i >= text.length) { setTimeout(erase, 2200); return; }
+            displayed += text[i];
+            el.innerHTML = highlightNums(displayed, cls) + '<span class="tw-cursor"></span>';
+            i++;
+            setTimeout(type, 25 + Math.random() * 35);
         }
         function erase() {
-            if (text.length === 0) { if (cb) cb(); return; }
-            // strip last HTML tag or char
-            const tagMatch = text.match(/<[^>]+>$/);
-            if (tagMatch) {
-                text = text.slice(0, -tagMatch[0].length);
-            } else {
-                text = text.slice(0, -1);
-            }
-            el.innerHTML = text + '<span class="tw-cursor"></span>';
+            if (displayed.length === 0) { if (cb) cb(); return; }
+            displayed = displayed.slice(0, -1);
+            el.innerHTML = highlightNums(displayed, cls) + '<span class="tw-cursor"></span>';
             setTimeout(erase, 12);
         }
         type();
@@ -437,12 +427,7 @@
     function runCycle(idx) {
         const el = $('tw-main');
         const line = TW_LINES[idx % TW_LINES.length];
-        typeErase(el, [
-            { type: 'text', value: '> ' },
-            { type: 'text', value: line.prefix },
-            { type: 'num', value: line.getVal(), cls: line.cls },
-            { type: 'text', value: line.suffix },
-        ], () => runCycle(idx + 1));
+        typeErase(el, '> ' + line.getText(), line.cls, () => runCycle(idx + 1));
     }
 
     setTimeout(() => runCycle(0), 800);
