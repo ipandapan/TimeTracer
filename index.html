@@ -193,11 +193,13 @@
 (function() {
     'use strict';
 
-    // ── Obfuscated dates (Base64-encoded ISO strings) ──
+    // ── Encoded dates (XOR + hex, auto-decoded at runtime) ──
+    function _xd(h,k){return h.match(/.{2}/g).map(function(x,i){return String.fromCharCode(parseInt(x,16)^k.charCodeAt(i%k.length))}).join('');}
     function _d(s){return new Date(s)}
-    var BIRTH = _d('1991-04-16T00:00:00');      // 1991-04-16
-    var WORK_START = _d('2019-07-01T00:00:00');  // 2019-07-01
-    var RETIRE = _d('2054-04-01T00:00:00');      // 2054-04-01
+    var _K='SiliconAge2026';
+    var BIRTH     = _d(_xd('625055584e5f5a6c56536600020c6359565953',_K));
+    var WORK_START= _d(_xd('61595d504e5f596c57546600020c6359565953',_K));
+    var RETIRE    = _d(_xd('6159595d4e5f5a6c57546600020c6359565953',_K));
     var LIFE_YEARS = 90;
     var LIFE_END = new Date(BIRTH.getFullYear() + LIFE_YEARS, BIRTH.getMonth(), BIRTH.getDate());
     var LIFE_DAYS = Math.round((LIFE_END - BIRTH) / 86400000);
