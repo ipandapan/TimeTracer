@@ -109,7 +109,7 @@
             <div class="hero-pct" id="hero-pct">--%</div>
         </div>
         <div class="hero-bar"><div class="hero-fill" id="hero-fill"><div class="hero-glow"></div></div></div>
-        <div class="hero-ends"><span>1991</span><span>2081</span></div>
+        <div class="hero-ends"><span id="hero-start"></span><span id="hero-end"></span></div>
     </div>
 
     <div class="year-bar">
@@ -200,7 +200,7 @@
     var BIRTH     = _d(_xd('625055584e5f5a6c56536600020c6359565953',_K));
     var WORK_START= _d(_xd('61595d504e5f596c57546600020c6359565953',_K));
     var RETIRE    = _d(_xd('6159595d4e5f5a6c57546600020c6359565953',_K));
-    var LIFE_YEARS = 90;
+    var LIFE_YEARS = parseInt(_xd('6a59',_K));
     var LIFE_END = new Date(BIRTH.getFullYear() + LIFE_YEARS, BIRTH.getMonth(), BIRTH.getDate());
     var LIFE_DAYS = Math.round((LIFE_END - BIRTH) / 86400000);
     var CAREER_DAYS = Math.round((RETIRE - WORK_START) / 86400000);
@@ -215,6 +215,8 @@
     var elClockDate = $('clock-date');
     var elHeroFill = $('hero-fill');
     var elHeroPct = $('hero-pct');
+    var elHeroStart = $('hero-start');
+    var elHeroEnd = $('hero-end');
     var elTopBar = $('top-bar-fill');
     var elYearFill = $('year-fill');
     var elYearPct = $('year-pct');
@@ -281,6 +283,8 @@
         // Hero
         elHeroFill.style.width = lifePct.toFixed(2) + '%';
         elHeroPct.textContent = lifePct.toFixed(2) + '%';
+        elHeroStart.textContent = BIRTH.getFullYear();
+        elHeroEnd.textContent = LIFE_END.getFullYear();
         elTopBar.style.width = lifePct.toFixed(2) + '%';
 
         // Year progress
